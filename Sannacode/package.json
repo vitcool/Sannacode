@@ -1,0 +1,20 @@
+{
+  "name": "sannacode",
+  "version": "1.0.0",
+  "description": "Test task for Frontend Developer position",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --hot"
+  },
+  "keywords": [
+    "sannacode"
+  ],
+  "author": "Vitalii Kulyk",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
+  }
+}
