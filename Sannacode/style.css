@@ -1,0 +1,20 @@
+body{
+    margin: 0 !important;
+}
+.header, .footer{
+    background: #1e3d7f;
+    width: 100%;
+    height: 100%;
+}
+.content{
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+.calculate-button{
+    margin-left: 20px;
+}
+
+.calculate-result{
+    margin-top: 20px;
+}
