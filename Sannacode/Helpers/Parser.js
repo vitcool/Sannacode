@@ -24,7 +24,7 @@ Parser.prototype.parse = function (input) {
             }
 
             if (token !== "(")
-                throw new Error("Mismatched parentheses.");
+                throw new Error(0);
             break;
         default:
             if (table.hasOwnProperty(token)) {
@@ -51,7 +51,7 @@ Parser.prototype.parse = function (input) {
     while (stack.length) {
         var token = stack.shift();
         if (token !== "(") output.push(token);
-        else throw new Error("Mismatched parentheses.");
+        else throw new Error(0);
     }
 
     return output;

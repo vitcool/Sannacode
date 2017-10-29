@@ -1,14 +1,19 @@
 import React from "react";
 import Lexer from "lex";
-import Parser from "./Parser";
+import ButtonComponent from "./ButtonComponent.jsx";
+import Parser from "../Helpers/Parser";
+import Compute from "../Helpers/Compute";
+import ExceptionHandler from "../Helpers/ExceptionHandler";
 
 var _tokenizer = require("tokenizer");
 
 export default class Calculator extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { result: "", lexer: null, parser: null };
+    this.state = { compute: null, handler: null };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.clickKeyButtonHandler = this.clickKeyButtonHandler.bind(this);
+    this.allClean = this.allClean.bind(this);
   }
   initializeLexer() {
     var lexer = new Lexer();
@@ -40,82 +45,79 @@ export default class Calculator extends React.Component {
     });
     return parser;
   }
-  parse(input) {
-      this.state.lexer.setInput(input);
-      var tokens = [],
-        token;
-      while ((token = this.state.lexer.lex())) tokens.push(token);
-      return this.state.parser.parse(tokens);
-  }
-  compute(parsed) {
-    var stack = [];
-
-    var operator = {
-      "+": function(a, b) {
-        return a + b;
-      },
-      "-": function(a, b) {
-        return a - b;
-      },
-      "*": function(a, b) {
-        return a * b;
-      },
-      "/": function(a, b) {
-        return a / b;
-      }
-    };
-    for (var i = 0; i < parsed.length; i++) {
-      var symbol = parsed[i];
-      switch (symbol) {
-        case "+":
-        case "-":
-        case "*":
-        case "/":
-          var b = +stack.pop();
-          var a = +stack.pop();
-          stack.push(operator[symbol](a, b));
-          break;
-        default:
-          if (parsed[i + 1] == ".") {
-            if (parsed[i + 2] != ".") {
-              symbol = symbol + "." + parsed[i + 2];
-              i += 2;
-              if (parsed[i + 1] == ".") {
-                throw new Error("So much dots.");
-              }
-            } else {
-              throw new Error("So much dots.");
-            }
-          }
-          stack.push(symbol);
-      }
-    }
-
-    var output = stack.pop();
-    this.setState({ result: output });
-  }
   handleSubmit(e) {
     e.preventDefault();
+    this.refs.error.classList.remove("display");
     try {
-      var parsed = this.parse(this.refs.nameField.value);
+      var parsed = this.state.compute.parse(this.refs.input.value);
       if (parsed) {
-        this.compute(parsed);
+        var perform = this.state.compute.perform(parsed);
+        if (perform && perform != this.refs.input.value + "undefined") {
+          this.refs.input.value = perform;
+        } else {
+          throw new Error(2);
+        }
       }
     } catch (e) {
-      alert(e);
+      this.refs.error.innerHTML = this.state.handler.handle(e.message);
+      this.refs.error.classList.add("display");
     }
   }
-  init() {
-    this.state.lexer = this.initializeLexer();
-    this.state.parser = this.initiaizeParser();
+  initialize() {
+    var lexer = this.initializeLexer();
+    var parser = this.initiaizeParser();
+    this.state.compute = new Compute(lexer, parser);
+    this.state.handler = new ExceptionHandler();
+  }
+  clickKeyButtonHandler(symbol) {
+    this.refs.error.classList.remove("display");
+    this.refs.input.value += symbol;
+  }
+  allClean() {
+    this.refs.error.classList.remove("display");
+    this.refs.input.value = "";
   }
   render() {
-    this.init();
+    this.initialize();
     return (
-      <div>
-        <input type="text" ref="nameField" />
-        <button className="calculate-button" onClick={this.handleSubmit}>Calculate</button>
-        <div className="calculate-result">{this.state.result}</div>
+      <div className="calculator-form">
+        <input className="input-field" type="text" ref="input" />
+        <div className="keyboard-form">
+          <button className="key-button wide-button" onClick={this.allClean}>
+            AC
+          </button>
+          <div className="top-panel">
+            <ButtonComponent
+              text="("
+              click={this.clickKeyButtonHandler}
+              selfWide="true"
+            />
+            <ButtonComponent
+              text=")"
+              click={this.clickKeyButtonHandler}
+              selfWide="true"
+            />
+          </div>
+          <ButtonComponent text="1" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="2" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="3" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="+" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="4" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="5" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="6" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="-" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="7" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="8" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="9" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="/" click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="." click={this.clickKeyButtonHandler} />
+          <ButtonComponent text="0" click={this.clickKeyButtonHandler} />
+          <button className="key-button" onClick={this.handleSubmit}>
+            =
+          </button>
+          <ButtonComponent text="*" click={this.clickKeyButtonHandler} />
+        </div>
+        <div className="error-field" ref="error" />
       </div>
     );
   }
