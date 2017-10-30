@@ -47,7 +47,7 @@ export default class Calculator extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    this.refs.error.classList.remove("display");
+    this.hideErrorMessage();
     try {
       var parsed = this.state.compute.parse(this.refs.input.value);
       if (parsed) {
@@ -59,8 +59,7 @@ export default class Calculator extends React.Component {
         }
       }
     } catch (e) {
-      this.refs.error.innerHTML = this.state.handler.handle(e.message);
-      this.refs.error.classList.add("display");
+      this.showErrorMessage(this.state.handler.handle(e.message));
     }
   }
   initialize() {
@@ -70,12 +69,19 @@ export default class Calculator extends React.Component {
     this.state.handler = new ExceptionHandler();
   }
   clickKeyButtonHandler(symbol) {
-    this.refs.error.classList.remove("display");
+    this.hideErrorMessage();
     this.refs.input.value += symbol;
   }
   allClean() {
-    this.refs.error.classList.remove("display");
+    this.hideErrorMessage();
     this.refs.input.value = "";
+  }
+  showErrorMessage(message) {
+    this.refs.error.innerHTML = message;
+    this.refs.error.classList.add("display");
+  }
+  hideErrorMessage(){
+    this.refs.error.classList.remove("display");
   }
   render() {
     this.initialize();

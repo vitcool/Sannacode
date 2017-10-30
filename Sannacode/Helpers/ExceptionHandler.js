@@ -1,7 +1,7 @@
 export default function ExceptionHandler() {}
 
 ExceptionHandler.prototype.handle = function(errorMessage) {
-  var exception = "Sorry, unknown error";
+  var exception = "Input field contains unsupported symbol.";
   switch (errorMessage) {
     case "0": {
       exception = "Number of opening brackets doesn`t equal number of closing.";
@@ -11,7 +11,7 @@ ExceptionHandler.prototype.handle = function(errorMessage) {
       exception = "So many dots. Please check it.";
       break;
     case "2":
-      exception = "Input field contains unsupported symbol.";
+      exception = "Parsing error. Please check input symbols.";
       break;
   }
   return exception;
